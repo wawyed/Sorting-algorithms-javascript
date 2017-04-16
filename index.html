@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sorting algorithms javascript</title>
+</head>
+<body>
+
+</body>
+<script>
+  (function(global) {
+    function orderArray(unorderedArray) {
+      var times = 0;
+      for (var i = 0; i < unorderedArray.length; i++) {
+        for (var j = unorderedArray.length - 1; j > i; j--) {
+          if (unorderedArray[j] < unorderedArray[i]) {
+            var tmp =  unorderedArray[i];
+            unorderedArray[i] = unorderedArray[j];
+            unorderedArray[j] = tmp;
+          }
+          times++;
+        }
+      }
+      console.log("bubble sort: ", times);
+
+      return unorderedArray;
+    }
+
+    var quicksortTime = 0;
+    function quicksort(unsortedArray, begin, end) {
+
+
+      if (begin >= end) {
+        return;
+      }
+
+      var pivotIndex = Math.ceil((begin + end) /2);
+      var pivotValue = unsortedArray[pivotIndex];
+
+
+      var result = separateArray(unsortedArray, begin, end, pivotValue);
+
+      quicksort(unsortedArray, begin, result.e);
+      quicksort(unsortedArray, result.b, end);
+
+      return unsortedArray;
+    }
+
+    function separateArray(unsortedArray, begin, end, pivotValue) {
+      var tmp;
+
+      while (begin <= end) {
+        quicksortTime++;
+        tmp = null;
+
+        if (unsortedArray[begin] >= pivotValue) {
+          tmp = unsortedArray[begin];
+        } else {
+          begin++;
+        }
+
+        if (unsortedArray[end] <= pivotValue) {
+          if (tmp !== null) {
+            unsortedArray[begin] = unsortedArray[end];
+            unsortedArray[end] = tmp;
+            begin++;
+            end--;
+          }
+        } else {
+          end--;
+        }
+      }
+
+      return { b: begin, e: end };
+    }
+
+    function generateRandomArray(arrayLength) {
+      var randomArray = [];
+      for (var i = 0; i < arrayLength; i++) {
+        randomArray.push(Math.floor(Math.random()*arrayLength));
+      }
+
+      return randomArray;
+    }
+
+    global.arrayExercise = {
+      generateRandomArray: generateRandomArray,
+      createOrderedArray: orderArray,
+      quicksort: function(unsortedArray) {
+        quicksortTime = 0;
+        var array = quicksort(unsortedArray, 0, unsortedArray.length-1);
+        console.log("quick sort: ", quicksortTime);
+        return array;
+      }
+    };
+  })(window);
+
+  var initialArray = arrayExercise.generateRandomArray(50000);
+  console.log("Initial unordered array: ", initialArray);
+
+  setTimeout(function() {
+    console.time('bubble timer');
+    console.log("Ordered array: ", arrayExercise.createOrderedArray([].concat(initialArray)));
+    console.timeEnd('bubble timer');
+
+  }, 0);
+
+  setTimeout(function() {
+    var times = 0;
+    console.time('native timer');
+    console.log("Ordered array native: ", [].concat(initialArray).sort(function(a, b) {
+      times++;
+      return a - b;
+    }));
+    console.log("native: ", times);
+    console.timeEnd('native timer');
+  }, 0);
+
+  setTimeout(function() {
+    console.time('quicksort timer');
+    console.log("Ordered array quicksort: ", arrayExercise.quicksort([].concat(initialArray)));
+    console.timeEnd('quicksort timer');
+  }, 0);
+
+</script>
+</html>
